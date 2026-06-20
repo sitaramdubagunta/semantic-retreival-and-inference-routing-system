@@ -6,7 +6,7 @@ def generate_response(message: str):
 
     provider_name = choose_provider(message)
 
-    provider = PROVIDERS[provider_name]
+    provider = PROVIDERS[provider_name] 
 
     response = provider.generate(message)
 
