@@ -1,26 +1,39 @@
-import { useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import Landing from "./pages/Landing";
+import Dashboard from "./pages/Dashboard";
+import Auth from "./pages/Auth";
+
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
-  const [message, setMessage] = useState("");
-
-  async function callBackend() {
-    const response = await fetch("http://localhost:8000/");
-    const data = await response.json();
-
-    setMessage(data.message);
-  }
-
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-      <button
-        onClick={callBackend}
-        className="bg-black text-white px-4 py-2 rounded"
-      >
-        Call Backend
-      </button>
+    <BrowserRouter>
 
-      <p>{message}</p>
-    </div>
+      <Routes>
+
+        <Route
+          path="/"
+          element={<Landing />}
+        />
+
+        <Route
+          path="/auth"
+          element={<Auth />}
+        />
+
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+      </Routes>
+
+    </BrowserRouter>
   );
 }
 
