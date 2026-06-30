@@ -1,7 +1,7 @@
 import asyncio
+import json
 import time
 from collections.abc import AsyncGenerator
-
 from database.tasks import process_heavy_task
 from providers.provider_registry import PROVIDERS
 from services.persistence_service import (
@@ -144,9 +144,17 @@ class ChatService:
                             current_model,
                         ):
                             parts.append(token)
-                            yield token
 
-                        latency_ms = int((time.perf_counter() - start_time) * 1000)
+                            yield json.dumps(
+                                {
+                                    "type": "token",
+                                    "content": token,
+                                }
+                            )
+
+                        latency_ms = int(
+                            (time.perf_counter() - start_time) * 1000
+                        )
 
                         create_response(
                             request_id=request_id,
@@ -154,10 +162,21 @@ class ChatService:
                             content="".join(parts),
                             latency_ms=latency_ms,
                         )
+
+                        yield json.dumps(
+                            {
+                                "type": "meta",
+                                "provider": current_provider_name,
+                                "model": current_model,
+                                "latency_ms": latency_ms,
+                            }
+                        )
+
                         return
 
                     except Exception as error:
                         last_error = error
+
                         if not self._is_quota_error(error):
                             raise
 

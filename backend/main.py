@@ -57,9 +57,8 @@ async def chat_v1(
         )
 
     async def sse_stream():
-        async for token in result["generator"]:
-            yield f"data: {token}\n\n"
-
+        async for event in result["generator"]:
+            yield f"data: {event}\n\n"
         yield "data: [DONE]\n\n"
 
     return StreamingResponse(
